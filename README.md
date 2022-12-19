@@ -6,7 +6,7 @@ backend server code
 ## Getting Started
 
 ### Installing
-- If you have not built a crawl server, please follow the link below first.
+- If you have not built a crawling server, please follow the link below first.
   - <https://github.com/Generation-Foundation/Explorer-Crawling-test>
 
 - Git clone this repo
