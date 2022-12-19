@@ -1,4 +1,4 @@
-# Explorer-Crawling-test
+# Explorer-Backend-test
 
 ## Description
 backend server code
@@ -10,3 +10,6 @@ backend server code
 ```bash
 git clone https://github.com/Generation-Foundation/Explorer-Backend-test.git
 ```
+
+## Contributors
+by Danny

@@ -1,0 +1,34 @@
+{
+  "name": "gen-lite-explorer-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon server.js",
+    "dev2": "nodemon rpcTest.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Generation-Foundation/gen-lite-explorer-server.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Generation-Foundation/gen-lite-explorer-server/issues"
+  },
+  "homepage": "https://github.com/Generation-Foundation/gen-lite-explorer-server#readme",
+  "dependencies": {
+    "abi-decoder": "^2.4.0",
+    "axios": "^0.27.2",
+    "body-parser": "^1.20.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.1",
+    "ethereum-input-data-decoder": "^0.4.2",
+    "express": "^4.18.1",
+    "express-rate-limit": "^6.6.0",
+    "moment": "^2.29.4",
+    "mysql": "^2.18.1",
+    "nodemon": "^2.0.19"
+  }
+}
