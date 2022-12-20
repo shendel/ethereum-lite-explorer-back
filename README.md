@@ -26,7 +26,7 @@ npm install --save
 node server.js
 ```
 - Go to the following link to build your frontend server
-  - <https://github.com/Generation-Foundation/Explorer-Frontend-test>
+  - <https://github.com/Generation-Foundation/ethereum-lite-explorer-front>
 
 ### Api Reference
 This is GENERATION's rpc url api documentation. ([API Docs](https://documenter.getpostman.com/view/22780180/2s8YszMpBe#intro))
