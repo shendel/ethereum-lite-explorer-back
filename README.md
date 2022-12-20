@@ -1,4 +1,4 @@
-# GEN-Lite-Explorer-Backend
+# ethereum-lite-explorer-backend
 
 ## Description
 This project is an open-source block explorer on EVM chain. If you follow this repository, you can run explorer in localhost. This repository provides backend code. This server uses a RESTful API to access the database and fetch data.
@@ -7,7 +7,7 @@ This project is an open-source block explorer on EVM chain. If you follow this r
 
 ### Installing
 - If you have not built a crawling server, please follow the link below first.
-  - <https://github.com/Generation-Foundation/Explorer-Crawling-test>
+  - <https://github.com/Generation-Foundation/ethereum-lite-explorer-crawling>
 
 - Git clone this repo
 ```bash
@@ -41,6 +41,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/Jaewoneeee"><img src="https://avatars.githubusercontent.com/u/93761302?v=4" width="100px;" alt=""/><br /><sub><b>Danny</b></sub></a><br /><a>💻</a> <a>🤔</a> <a>🔣</a> <a>📖</a> <a>🚧</a></td> 
   </tr>
 </table>
+
+## Developed
+Developing by [Generation Foundation](https://github.com/Generation-Foundation)
 
 ## Our Services and Community
 - [Official Website](https://gen.foundation/)
