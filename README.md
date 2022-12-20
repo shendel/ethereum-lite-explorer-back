@@ -1,4 +1,4 @@
-# Explorer-Backend-test
+# GEN-Lite-Explorer-Backend
 
 ## Description
 backend server code
@@ -33,7 +33,14 @@ This is GENERATION's rpc url api documentation. ([API Docs](https://documenter.g
 </br>Use your blockchain rpc url. Access the endpoint and check the data.
 
 ## Contributors
-by Danny
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<table>
+  <tr>
+    <td align="center"><a href="https://github.com/Booyoun-Kim"><img src="https://avatars.githubusercontent.com/u/34641838?v=4" width="100px;" alt=""/><br /><sub><b>Ben</b></sub></a><br /><a>🧑‍🏫</a> <a>🤔</a> <a>📆</a> <a>💬</a></td>
+    <td align="center"><a href="https://github.com/Jaewoneeee"><img src="https://avatars.githubusercontent.com/u/93761302?v=4" width="100px;" alt=""/><br /><sub><b>Danny</b></sub></a><br /><a>💻</a> <a>🤔</a> <a>🔣</a> <a>📖</a> <a>🚧</a></td> 
+  </tr>
+</table>
 
 ## Our Services and Community
 - [Official Website](https://gen.foundation/)
