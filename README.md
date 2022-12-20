@@ -11,7 +11,7 @@ This project is an open-source block explorer on EVM chain. If you follow this r
 
 - Git clone this repo
 ```bash
-git clone https://github.com/Generation-Foundation/Explorer-Backend-test.git
+git clone https://github.com/Generation-Foundation/ethereum-lite-explorer-back.git
 ```
 - Create ``.env`` to update MySQL database settings.
 ```env
