@@ -1,7 +1,7 @@
 # GEN-Lite-Explorer-Backend
 
 ## Description
-backend server code
+This project is an open-source block explorer on EVM chain. If you follow this repository, you can run explorer in localhost. This repository provides backend code. This server uses a RESTful API to access the database and fetch data.
 
 ## Getting Started
 
