@@ -5,293 +5,270 @@ const { db, api_probit } = require("../config");
 
 // ===== basic controller =====
 const root = async(req, res) => {
-    try {
-        res.json("Hello Server");
-    } catch (error) {
-        console.error(error);
-    }
+  try {
+    res.json("Backend");
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 // ===== main page data =====
 const tokenData = async(req, res) => {
-    try {
-        const datas = await axios.get(api_probit);
-        res.json(datas.data);
-    } catch (error) {
-        console.error(error);
-    }
+  try {
+    const datas = await axios.get(api_probit);
+    res.json(datas.data);
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 const dbChartData = async(req, res) => {
-    try {
-        const date = req.body.date;
+  try {
+    const date = req.body.date;
 
-        const getChartData = "SELECT * FROM transaction_data WHERE LOCATE( ? , time_stamp) > 0 ;";
-        db.query(getChartData, [date], (err, result) => {
-            //console.log(result)
-            res.json(result);
-        });
-    } catch(error) {
-        console.log(error)
-    }
+    const getChartData = "SELECT * FROM transaction_data WHERE LOCATE( ? , time_stamp) > 0 ;";
+    db.query(getChartData, [date], (err, result) => {
+      //console.log(result)
+      res.json(result);
+    });
+  } catch(error) {
+    console.log(error)
+  }
 };
 
 const dbFromAddress = async(req, res) => {
-    try {
-        const dbFromAddress = "SELECT DISTINCT fromAddress FROM transaction_data;";
-        db.query(dbFromAddress, (err, result) => {
-            //console.log(result)
-            //console.log(err)
-            res.json(result);
-        });
-    } catch(error) {
-        console.log(error)
-    }
+  try {
+    const dbFromAddress = "SELECT DISTINCT fromAddress FROM transaction_data;";
+    db.query(dbFromAddress, (err, result) => {
+      //console.log(result)
+      //console.log(err)
+      res.json(result);
+    });
+  } catch(error) {
+    console.log(error)
+  }
 };
 
 const dbToAddress = async(req, res) => {
-    try { 
-        const dbToAddress = "SELECT DISTINCT toAddress FROM transaction_data;";
-        db.query(dbToAddress, (err, result) => {
-            //console.log(result)
-            //console.log(err)
-            res.json(result);
-        });
-    } catch(error) {
-        console.log(error)
-    }
+  try { 
+    const dbToAddress = "SELECT DISTINCT toAddress FROM transaction_data;";
+    db.query(dbToAddress, (err, result) => {
+      //console.log(result)
+      //console.log(err)
+      res.json(result);
+    });
+  } catch(error) {
+    console.log(error)
+  }
 };
 
 const dbTotalTxsNum = async(req, res) => {
-    try {
-        const dbTotalTxsNum = "SELECT COUNT(*) AS result FROM transaction_data;";
-        db.query(dbTotalTxsNum, (err, result) => {
-            //console.log(result)
-            //console.log(err)
-            res.json(result);
-        });
-    } catch(error) {
-        console.log(error)
-    }
+  try {
+    const dbTotalTxsNum = "SELECT COUNT(*) AS result FROM transaction_data;";
+    db.query(dbTotalTxsNum, (err, result) => {
+      //console.log(result)
+      //console.log(err)
+      res.json(result);
+    });
+  } catch(error) {
+      console.log(error)
+  }
 };
 
 const dbLatestBlockData = async(req, res) => {
-    try {
-        const dbLatestBlockData = "SELECT * FROM block_data ORDER BY blocknumber DESC LIMIT 10;";
-        db.query(dbLatestBlockData, (err, result) => {
-            //console.log(err)
-            res.json(result);
-        });
-    } catch(error) {
-        console.log(error)
-    }
+  try {
+    const dbLatestBlockData = "SELECT * FROM block_data ORDER BY blocknumber DESC LIMIT 10;";
+    db.query(dbLatestBlockData, (err, result) => {
+      //console.log(err)
+      res.json(result);
+    });
+  } catch(error) {
+    console.log(error)
+  }
 };
 
 
 const dbAllBlocks = async(req, res) => {
-    try { 
-        const dbAllBlocks = "SELECT MAX(blocknumber) AS max_number FROM block_data;"
-        db.query(dbAllBlocks, (err, result) => {
+  try { 
+    const dbAllBlocks = "SELECT MAX(blocknumber) AS max_number FROM block_data;"
+    db.query(dbAllBlocks, (err, result) => {
 
-            if(!req.query.page){
-                const firstPageBlock = "SELECT * FROM block_data ORDER BY blocknumber DESC LIMIT 50;";
-                db.query(firstPageBlock, (err, result) => {
-                    res.json(result)
-                })
-            } else {
-                let string = JSON.stringify(result)
-                let parse = JSON.parse(string)
+      if(!req.query.page){
+        const firstPageBlock = "SELECT * FROM block_data ORDER BY blocknumber DESC LIMIT 50;";
+        db.query(firstPageBlock, (err, result) => {
+          res.json(result)
+        })
+      } else {
+        let string = JSON.stringify(result)
+        let parse = JSON.parse(string)
 
-                let allBlocks = parse[0].max_number
-                let countPerPage = Number(req.query.number) 
-                let pageNo = req.query.page
-            
-                let startIndex = allBlocks - (countPerPage * (pageNo - 1)) - countPerPage + 1
-                let endIndex = allBlocks - (countPerPage * (pageNo - 1)) 
+        let allBlocks = parse[0].max_number
+        let countPerPage = Number(req.query.number) 
+        let pageNo = req.query.page
+    
+        let startIndex = allBlocks - (countPerPage * (pageNo - 1)) - countPerPage + 1
+        let endIndex = allBlocks - (countPerPage * (pageNo - 1)) 
 
-                console.log("전체블록", allBlocks)
-                console.log(countPerPage, "개씩 총 페이지 수", Math.ceil(allBlocks / countPerPage))
-                
-                console.log("startIndex", startIndex)
-                console.log("endIndex", endIndex)
-
-                const pageBlock = "SELECT * FROM block_data WHERE blocknumber BETWEEN ? and ?;"
-                db.query(pageBlock, [startIndex, endIndex], (err, result) => {
-                    console.log("데이터개수", result.length)
-                    res.json(result.reverse())
-                })
-            }
-        });
-    } catch(error) {
-        console.log(error)
-    }
+        const pageBlock = "SELECT * FROM block_data WHERE blocknumber BETWEEN ? and ?;"
+        db.query(pageBlock, [startIndex, endIndex], (err, result) => {
+          res.json(result.reverse())
+        })
+      }
+    });
+  } catch(error) {
+    console.log(error)
+  }
 };
 
 const dbLatestTxs = async(req, res) => {
-    try {
-        const dbLatestTxsData = "SELECT * FROM transaction_data ORDER BY blockNumber DESC LIMIT 10;";
-        db.query(dbLatestTxsData, (err, result) => {
-            //console.log(result)
-            //console.log(err)
-            res.json(result);
-        });
-    } catch(error) {
-        console.log(error)
-    }
+  try {
+    const dbLatestTxsData = "SELECT * FROM transaction_data ORDER BY blockNumber DESC LIMIT 10;";
+    db.query(dbLatestTxsData, (err, result) => {
+      //console.log(result)
+      //console.log(err)
+      res.json(result);
+    });
+  } catch(error) {
+    console.log(error)
+  }
 };
 
 const dbAllTxs = async(req, res) => {
-    try {
-        const dbAllTxs = "SELECT COUNT(*) AS result FROM transaction_data;"
-        db.query(dbAllTxs, (err, result) => {
+  try {
+    const dbAllTxs = "SELECT COUNT(*) AS result FROM transaction_data;"
+    db.query(dbAllTxs, (err, result) => {
 
-            if(!req.query.page){
-                const firstPageBlock = "SELECT * FROM transaction_data ORDER BY blockNumber DESC LIMIT 50;";
-                db.query(firstPageBlock, (err, result) => {
-                    res.json(result)
-                })
-            } else {
-                let string = JSON.stringify(result)
-                let parse = JSON.parse(string)
+      if(!req.query.page){
+        const firstPageBlock = "SELECT * FROM transaction_data ORDER BY blockNumber DESC LIMIT 50;";
+        db.query(firstPageBlock, (err, result) => {
+          res.json(result)
+        })
+      } else {
+        let string = JSON.stringify(result)
+        let parse = JSON.parse(string)
 
-                let allTxs = parse[0].result
-                let countPerPage = Number(req.query.number)
-                let pageNo = req.query.page
+        let allTxs = parse[0].result
+        let countPerPage = Number(req.query.number)
+        let pageNo = req.query.page
 
-                let startIndex = countPerPage * (pageNo - 1)
+        let startIndex = countPerPage * (pageNo - 1)
 
-                console.log("전체트랜잭션", allTxs)
-                console.log(countPerPage, "개씩 총 페이지 수", Math.ceil(allTxs / countPerPage))
-                
-                console.log("startIndex", startIndex)
-                console.log("countPerPage", countPerPage)
-                
-                const pageTx = "SELECT * FROM transaction_data ORDER BY blockNumber DESC LIMIT ?, ?;"
-                db.query(pageTx, [startIndex, countPerPage], (err, result) => {
-                    console.log("데이터 개수",result.length)
-                    res.json(result)
-                })
-            }
-        });
-    } catch(error) {
-        console.log(error)
-    }
+        const pageTx = "SELECT * FROM transaction_data ORDER BY blockNumber DESC LIMIT ?, ?;"
+        db.query(pageTx, [startIndex, countPerPage], (err, result) => {
+          res.json(result)
+        })
+      }
+    });
+  } catch(error) {
+    console.log(error)
+  }
 };
 
 // ===== detail page data =====
 const dbBlockDetails = async(req, res) => {
-    try {
-        const blockNumber = req.body.blockNumber;
-        const getBlockDetail = "SELECT * FROM block_data WHERE blocknumber = ?;";
-        db.query(getBlockDetail, [blockNumber], (err, result) => {
-            res.json(result);
-        })
-    } catch(error) {
-        console.log(error)
-    }
+  try {
+    const blockNumber = req.body.blockNumber;
+    const getBlockDetail = "SELECT * FROM block_data WHERE blocknumber = ?;";
+    db.query(getBlockDetail, [blockNumber], (err, result) => {
+      res.json(result);
+    })
+  } catch(error) {
+    console.log(error)
+  }
 };
 
 const dbBlockTxs = async(req, res) => {
-    try {
-        const blockHexNumber = req.body.blockHexNumber;
-        const getBlockTxs = "SELECT * FROM transaction_data WHERE blockNumberHex = ?;";
-        db.query(getBlockTxs, [blockHexNumber], (err, result) => {
-            //console.log(blockHexNumber)
-            //console.log(result)
-            res.json(result);
-        });
-    } catch(error) {
-        console.log(error)
-    }
+  try {
+    const blockHexNumber = req.body.blockHexNumber;
+    const getBlockTxs = "SELECT * FROM transaction_data WHERE blockNumberHex = ?;";
+    db.query(getBlockTxs, [blockHexNumber], (err, result) => {
+      //console.log(blockHexNumber)
+      //console.log(result)
+      res.json(result);
+    });
+  } catch(error) {
+    console.log(error)
+  }
 };
 
 const dbTxDetails = async(req, res) => {
-    try {
-        const txHash = req.body.txHash;
-        const getTxDetails = "SELECT * FROM transaction_data WHERE txHash = ?;";
-        db.query(getTxDetails, [txHash], (err, result) => {
-            res.json(result);
-        });
-    } catch(error) {
-        console.log(error)
-    }
+  try {
+    const txHash = req.body.txHash;
+    const getTxDetails = "SELECT * FROM transaction_data WHERE txHash = ?;";
+    db.query(getTxDetails, [txHash], (err, result) => {
+      res.json(result);
+    });
+  } catch(error) {
+    console.log(error)
+  }
 };
 
 const dbAddressTxs = async(req, res) => {
-    try { 
-        const Address = req.body.address;
+  try { 
+    const Address = req.body.address;
 
-        if(!req.query.page){
-            const getAddressTxs = "SELECT * FROM transaction_data WHERE fromAddress = ? OR toAddress = ? ORDER BY time_stamp DESC LIMIT 25;";
-            db.query(getAddressTxs, [Address, Address], (err, result) => {
-                //console.log(err)
-                res.json(result);
-            });
-        } else {
-            const getAddressTxs = "SELECT * FROM transaction_data WHERE fromAddress = ? OR toAddress = ?";
-            db.query(getAddressTxs, [Address, Address], (err, result) => {
-                console.log("쿼리있을때 확인",result.length)
+    if(!req.query.page){
+      const getAddressTxs = "SELECT * FROM transaction_data WHERE fromAddress = ? OR toAddress = ? ORDER BY time_stamp DESC LIMIT 25;";
+      db.query(getAddressTxs, [Address, Address], (err, result) => {
+        //console.log(err)
+        res.json(result);
+      });
+    } else {
+      const getAddressTxs = "SELECT * FROM transaction_data WHERE fromAddress = ? OR toAddress = ?";
+      db.query(getAddressTxs, [Address, Address], (err, result) => {
+        let allTxsNum = result.length;
+        let countPerPage = 25;
+        let pageNo = req.query.page;
 
-                let allTxsNum = result.length;
-                let countPerPage = 25;
-                let pageNo = req.query.page;
+        let startIndex = countPerPage * (pageNo - 1)
 
-                let startIndex = countPerPage * (pageNo - 1)
-
-                console.log("account 전체트랜잭션", allTxsNum)
-                console.log(countPerPage, "개씩 총 페이지 수", Math.ceil(allTxsNum / countPerPage))
-                
-                console.log("startIndex", startIndex)
-                console.log("countPerPage", countPerPage)
-                
-                const pageTx = "SELECT * FROM transaction_data WHERE fromAddress = ? OR toAddress = ? ORDER BY time_stamp DESC LIMIT ?, ?;"
-                db.query(pageTx, [Address, Address, startIndex, countPerPage], (err, result) => {
-                    console.log(result)
-                    res.json(result)
-                })
-            })
-        }
-
-    } catch(error) {
-        console.log(error)
+        const pageTx = "SELECT * FROM transaction_data WHERE fromAddress = ? OR toAddress = ? ORDER BY time_stamp DESC LIMIT ?, ?;"
+        db.query(pageTx, [Address, Address, startIndex, countPerPage], (err, result) => {
+            res.json(result)
+        })
+      })
     }
+
+  } catch(error) {
+    console.log(error)
+  }
 };
 
 const dbAddressTxsNum = async(req, res) => {
-    try { 
-        const Address = req.body.address;
+  try { 
+    const Address = req.body.address;
 
-        const getAddressTxs = "SELECT * FROM transaction_data WHERE fromAddress = ? OR toAddress = ? ORDER BY time_stamp;";
-        db.query(getAddressTxs, [Address, Address], (err, result) => {
-            //console.log(err)
-            let length = result.length
-            let data = { accountTxsNum : length}
-            res.json(data);
-        });
+    const getAddressTxs = "SELECT * FROM transaction_data WHERE fromAddress = ? OR toAddress = ? ORDER BY time_stamp;";
+    db.query(getAddressTxs, [Address, Address], (err, result) => {
+      //console.log(err)
+      let length = result.length
+      let data = { accountTxsNum : length}
+      res.json(data);
+    });
 
-    } catch(error) {
-        console.log(error)
-    }
+  } catch(error) {
+    console.log(error)
+  }
 };
 
 
 const dbAddressCheck = async(req, res) => {
-    try { 
-        const Address = req.body.address;
+  try { 
+    const Address = req.body.address;
 
-        const getAddressCheck = "SELECT IF(EXISTS(SELECT * from contract_data  WHERE contractAddress = ? ), '1', '0' ) as RESULT;"
-        
-        db.query(getAddressCheck, [Address], (err, result) => {
-            let string = JSON.stringify(result)
-            let parse = JSON.parse(string)
-            let checkContractAddress = parse[0].RESULT
-            //console.log(checkContractAddress)
-            res.json(checkContractAddress)
-            //res.json(result);
-        });
-    } catch(error) {
-        console.log(error)
-    }
+    const getAddressCheck = "SELECT IF(EXISTS(SELECT * from contract_data  WHERE contractAddress = ? ), '1', '0' ) as RESULT;"
+    
+    db.query(getAddressCheck, [Address], (err, result) => {
+      let string = JSON.stringify(result)
+      let parse = JSON.parse(string)
+      let checkContractAddress = parse[0].RESULT
+      //console.log(checkContractAddress)
+      res.json(checkContractAddress)
+      //res.json(result);
+    });
+  } catch(error) {
+    console.log(error)
+  }
 };
 
 const dbInputDataDecode = (req, res) => {
@@ -1259,207 +1236,194 @@ const dbInputDataDecode = (req, res) => {
 };
 
 const chartAllTxsByDate = async(req, res) => {    
-    try {
-        const chartData = "SELECT DATE(`time_stamp`) AS 'day', COUNT(*) AS 'txLength' FROM `transaction_data`GROUP BY DATE(`time_stamp`);"
-        db.query(chartData, (err, result) => {
+  try {
+    const chartData = "SELECT DATE(`time_stamp`) AS 'day', COUNT(*) AS 'txLength' FROM `transaction_data`GROUP BY DATE(`time_stamp`);"
+    db.query(chartData, (err, result) => {
 
-            let string = JSON.stringify(result)
-            let parse = JSON.parse(string)
+      let string = JSON.stringify(result)
+      let parse = JSON.parse(string)
 
-            // 데이터 파싱한거 배열에 넣기 (+9시간해줌)
-            let dbTransactionArr = []
-            for(let i=0; i < parse.length; i++){
+      let dbTransactionArr = []
+      for(let i=0; i < parse.length; i++){
 
-                let timeSource = parse[i].day
-                const dateValue = moment(timeSource).format();
+        let timeSource = parse[i].day
+        const dateValue = moment(timeSource).format();
 
-                //console.log(dateValue.substr(0, 10), parse[i].txLength)
-                dbTransactionArr.push({
-                    day : dateValue.substr(0, 10),
-                    txLength : parse[i].txLength
-                })
-            }
+        //console.log(dateValue.substr(0, 10), parse[i].txLength)
+        dbTransactionArr.push({
+          day : dateValue.substr(0, 10),
+          txLength : parse[i].txLength
+        })
+      }
 
-            // 날짜 차이 계산 
-            let now = new Date();
+      let now = new Date();
 
-            let year = now.getFullYear();
-            let month = now.getMonth()+1;
-            let day = now.getDate();
-            
-            let stDate = new Date(2022, 08, 01);
-            let endDate = new Date(year, month, day);
-            
-            let btMs = endDate.getTime() - stDate.getTime() ;
-            let btDay = btMs / (1000*60*60*24) ;
-            
-            //console.log("일수 차이는?? " + btDay);
-
-            let totalArr = [];
-            for (let i=btDay; i>=0; i--) {
-                totalArr.push({ 
-                    day : moment().subtract(i, 'day').format("YYYY-MM-DD"),
-                    txLength : 0
-                });
-            }
-
-            // 날짜가 같으면 db에 있는 txLength를 대입
-            for(let i=0; i < totalArr.length; i++){
-                for(let j=0; j < dbTransactionArr.length; j++)
-                    if(totalArr[i].day == dbTransactionArr[j].day){
-                        //console.log(totalArr[i].day, dbTransactionArr[j].txLength)
-                        totalArr[i].txLength = dbTransactionArr[j].txLength
-                    }
-            }
-            
-            res.json(totalArr)
+      let year = now.getFullYear();
+      let month = now.getMonth()+1;
+      let day = now.getDate();
+      
+      let stDate = new Date(2022, 08, 01);
+      let endDate = new Date(year, month, day);
+      
+      let btMs = endDate.getTime() - stDate.getTime() ;
+      let btDay = btMs / (1000*60*60*24) ;
+      
+      let totalArr = [];
+      for (let i=btDay; i>=0; i--) {
+        totalArr.push({ 
+          day : moment().subtract(i, 'day').format("YYYY-MM-DD"),
+          txLength : 0
         });
-    } catch(error) {
-        console.log(error)
-    }
+      }
+
+      for(let i=0; i < totalArr.length; i++){
+        for(let j=0; j < dbTransactionArr.length; j++)
+          if(totalArr[i].day == dbTransactionArr[j].day){
+            //console.log(totalArr[i].day, dbTransactionArr[j].txLength)
+            totalArr[i].txLength = dbTransactionArr[j].txLength
+          }
+      }
+      
+      res.json(totalArr)
+    });
+  } catch(error) {
+    console.log(error)
+  }
 }
 
 const chartMonthlyTxsByDate = async(req, res) => {    
-    try {
-        const chartData = "SELECT DATE(`time_stamp`) AS 'day', COUNT(*) AS 'txLength' FROM `transaction_data`GROUP BY DATE(`time_stamp`);"
-        db.query(chartData, (err, result) => {
+  try {
+    const chartData = "SELECT DATE(`time_stamp`) AS 'day', COUNT(*) AS 'txLength' FROM `transaction_data`GROUP BY DATE(`time_stamp`);"
+    db.query(chartData, (err, result) => {
 
-            let string = JSON.stringify(result)
-            let parse = JSON.parse(string)
+      let string = JSON.stringify(result)
+      let parse = JSON.parse(string)
 
-            // 데이터 파싱한거 배열에 넣기 (+9시간해줌)
-            let dbTransactionArr = []
-            for(let i=0; i < parse.length; i++){
+      let dbTransactionArr = []
+      for(let i=0; i < parse.length; i++){
 
-                let timeSource = parse[i].day
-                const dateValue = moment(timeSource).format();
+        let timeSource = parse[i].day
+        const dateValue = moment(timeSource).format();
 
-                //console.log(dateValue.substr(0, 10), parse[i].txLength)
-                dbTransactionArr.push({
-                    day : dateValue.substr(0, 10),
-                    txLength : parse[i].txLength
-                })
-            }
-            //console.log(dbTransactionArr)
-            // 날짜 차이 계산 
-            let now = new Date();
+        //console.log(dateValue.substr(0, 10), parse[i].txLength)
+        dbTransactionArr.push({
+          day : dateValue.substr(0, 10),
+          txLength : parse[i].txLength
+        })
+      }
+      //console.log(dbTransactionArr)
+      let now = new Date();
 
-            let year = now.getFullYear();
-            let month = now.getMonth()+1;
-            let day = now.getDate();
-            
-            let stDate = new Date(year, month - 1, day);
-            let endDate = new Date(year, month, day);
+      let year = now.getFullYear();
+      let month = now.getMonth()+1;
+      let day = now.getDate();
+      
+      let stDate = new Date(year, month - 1, day);
+      let endDate = new Date(year, month, day);
 
-            let btMs = endDate.getTime() - stDate.getTime() ;
-            let btDay = btMs / (1000*60*60*24) ;
-            
-            let totalArr = [];
-            for (let i=btDay; i>=0; i--) {
-                totalArr.push({ 
-                    day : moment().subtract(i, 'day').format("YYYY-MM-DD"),
-                    txLength : 0
-                });
-            }
-
-            // 날짜가 같으면 db에 있는 txLength를 대입
-            for(let i=0; i < totalArr.length; i++){
-                for(let j=0; j < dbTransactionArr.length; j++)
-                    if(totalArr[i].day == dbTransactionArr[j].day){
-                        //console.log(totalArr[i].day, dbTransactionArr[j].txLength)
-                        totalArr[i].txLength = dbTransactionArr[j].txLength
-                    }
-            }
-
-            res.json(totalArr)
+      let btMs = endDate.getTime() - stDate.getTime() ;
+      let btDay = btMs / (1000*60*60*24) ;
+      
+      let totalArr = [];
+      for (let i=btDay; i>=0; i--) {
+        totalArr.push({ 
+          day : moment().subtract(i, 'day').format("YYYY-MM-DD"),
+          txLength : 0
         });
-    } catch(error) {
-        console.log(error)
-    }
+      }
+
+      for(let i=0; i < totalArr.length; i++){
+        for(let j=0; j < dbTransactionArr.length; j++)
+          if(totalArr[i].day == dbTransactionArr[j].day){
+            //console.log(totalArr[i].day, dbTransactionArr[j].txLength)
+            totalArr[i].txLength = dbTransactionArr[j].txLength
+          }
+      }
+
+      res.json(totalArr)
+    });
+  } catch(error) {
+    console.log(error)
+  }
 }
 
 const chartWeeklyTxsByDate = async(req, res) => {    
-    try {
-        const chartData = "SELECT DATE(`time_stamp`) AS 'day', COUNT(*) AS 'txLength' FROM `transaction_data`GROUP BY DATE(`time_stamp`);"
-        db.query(chartData, (err, result) => {
+  try {
+    const chartData = "SELECT DATE(`time_stamp`) AS 'day', COUNT(*) AS 'txLength' FROM `transaction_data`GROUP BY DATE(`time_stamp`);"
+    db.query(chartData, (err, result) => {
 
-            let string = JSON.stringify(result)
-            let parse = JSON.parse(string)
+      let string = JSON.stringify(result)
+      let parse = JSON.parse(string)
 
-            // 데이터 파싱한거 배열에 넣기 (+9시간해줌)
-            let dbTransactionArr = []
-            for(let i=0; i < parse.length; i++){
+      let dbTransactionArr = []
+      for(let i=0; i < parse.length; i++){
 
-                let timeSource = parse[i].day
-                console.log("여기확인====",timeSource)
-                const dateValue = moment(timeSource).format();
+        let timeSource = parse[i].day
+        const dateValue = moment(timeSource).format();
 
-                console.log(dateValue.substr(0, 10), parse[i].txLength)
-                dbTransactionArr.push({
-                    day : dateValue.substr(0, 10),
-                    txLength : parse[i].txLength
-                })
-            }
-            console.log(dbTransactionArr)
-            // 날짜 차이 계산 
-            let now = new Date();
+        dbTransactionArr.push({
+          day : dateValue.substr(0, 10),
+          txLength : parse[i].txLength
+        })
+      }
 
-            let year = now.getFullYear();
-            let month = now.getMonth()+1;
-            let day = now.getDate();
-            
-            let stDate = new Date(year, month, day - 6);
-            let endDate = new Date(year, month, day);
+      let now = new Date();
 
-            let btMs = endDate.getTime() - stDate.getTime() ;
-            let btDay = btMs / (1000*60*60*24) ;
+      let year = now.getFullYear();
+      let month = now.getMonth()+1;
+      let day = now.getDate();
+      
+      let stDate = new Date(year, month, day - 6);
+      let endDate = new Date(year, month, day);
 
-            let totalArr = [];
-            for (let i=btDay; i>=0; i--) {
-                totalArr.push({ 
-                    day : moment().subtract(i, 'day').format("YYYY-MM-DD"),
-                    txLength : 0
-                });
-            }
+      let btMs = endDate.getTime() - stDate.getTime() ;
+      let btDay = btMs / (1000*60*60*24) ;
 
-            // 날짜가 같으면 db에 있는 txLength를 대입
-            for(let i=0; i < totalArr.length; i++){
-                for(let j=0; j < dbTransactionArr.length; j++)
-                    if(totalArr[i].day == dbTransactionArr[j].day){
-                        console.log(totalArr[i].day, dbTransactionArr[j].txLength)
-                        totalArr[i].txLength = dbTransactionArr[j].txLength
-                    }
-            }
-            console.log(totalArr)
-            console.log(typeof(totalArr[0].day))
-            res.json(totalArr)
+      let totalArr = [];
+      for (let i=btDay; i>=0; i--) {
+        totalArr.push({ 
+          day : moment().subtract(i, 'day').format("YYYY-MM-DD"),
+          txLength : 0
         });
-    } catch(error) {
-        console.log(error)
-    }
+      }
+
+      for(let i=0; i < totalArr.length; i++){
+        for(let j=0; j < dbTransactionArr.length; j++)
+          if(totalArr[i].day == dbTransactionArr[j].day){
+            console.log(totalArr[i].day, dbTransactionArr[j].txLength)
+            totalArr[i].txLength = dbTransactionArr[j].txLength
+          }
+      }
+      console.log(totalArr)
+      console.log(typeof(totalArr[0].day))
+      res.json(totalArr)
+    });
+  } catch(error) {
+    console.log(error)
+  }
 }
 
 
 module.exports = { 
-    root, 
-    tokenData,
-    dbChartData, 
-    dbFromAddress,
-    dbToAddress,
-    dbTotalTxsNum,
-    dbLatestTxs,
-    dbLatestBlockData,
-    dbAllBlocks,
-    dbLatestTxs,
-    dbAllTxs,
-    dbBlockDetails,
-    dbBlockTxs,
-    dbTxDetails,
-    dbAddressTxs,
-    dbAddressTxsNum,
-    dbAddressCheck,
-    dbInputDataDecode,
-    chartAllTxsByDate,
-    chartMonthlyTxsByDate,
-    chartWeeklyTxsByDate,
+  root, 
+  tokenData,
+  dbChartData, 
+  dbFromAddress,
+  dbToAddress,
+  dbTotalTxsNum,
+  dbLatestTxs,
+  dbLatestBlockData,
+  dbAllBlocks,
+  dbLatestTxs,
+  dbAllTxs,
+  dbBlockDetails,
+  dbBlockTxs,
+  dbTxDetails,
+  dbAddressTxs,
+  dbAddressTxsNum,
+  dbAddressCheck,
+  dbInputDataDecode,
+  chartAllTxsByDate,
+  chartMonthlyTxsByDate,
+  chartWeeklyTxsByDate,
 }

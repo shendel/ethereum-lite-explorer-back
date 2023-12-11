@@ -12,14 +12,14 @@ app.use(bodyParser.json());
 
 // express-rate-limit
 const limiter = rateLimit({
-    windowMs: 60 * 1000, // 1 minute interval
-    max: 600 * 6, // maximum number of calls during windowMs
-    handler(req, res) { // Callback function when limit is exceeded
-        res.status(this.statusCode).json({
-            code: this.statusCode, // statusCode default is 429
-            message: 'Too Many Reqeust..',
-        });
-    },
+  windowMs: 60 * 1000, // 1 minute interval
+  max: 600 * 6, // maximum number of calls during windowMs
+  handler(req, res) { // Callback function when limit is exceeded
+    res.status(this.statusCode).json({
+      code: this.statusCode, // statusCode default is 429
+      message: 'Too Many Reqeust..',
+    });
+  },
 });
 
 // basic router
@@ -53,5 +53,5 @@ app.use('/chartWeeklyTxsByDate', limiter, indexRoute)
 
 
 app.listen(port, () => {
-    console.log(`Example app listening at http://localhost:${port}`);
+  console.log(`Backend started at http://localhost:${port}`);
 });
